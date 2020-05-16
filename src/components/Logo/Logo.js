@@ -4,9 +4,9 @@ import classes from './Logo.css'
 
 
 const logo = (props) => {
-    return <div className={classes.Logo}>
+    return <div className={classes.Logo} >
         <img src={burgerLogo} alt="Logo"></img>
-    </div>
+    </div >
 }
 
 export default logo;

@@ -19,6 +19,7 @@
     padding: 6px 10px;
     display: block;
     width: 100%;
+    box-sizing: border-box;
 }
 
 
@@ -26,4 +27,9 @@
  outline: none;
  background-color: #ccc;
 
+}
+
+Invalid {
+    border: 1px solid red;
+    background-color: salmon;
 }

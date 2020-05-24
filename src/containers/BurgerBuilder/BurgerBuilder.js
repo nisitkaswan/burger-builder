@@ -8,8 +8,9 @@ import OrderSummary from '../../components/Burger/OrderSummary/OrderSummary';
 import Spinner from '../../components/UI/Spinner/Spinner';
 import withErrorHandler from '../../hoc/withErrorHandler/withErrorHandler';
 import axios from '../../axios-orders';
-import * as actionTypes from '../../store/actions';
+import * as actionTypes from '../../store/actions/actionTypes';
 import { connect } from 'react-redux';
+import { addIngredient, removeIngredient } from '../../store/actions/burgerBuilder';
 
 
 
@@ -23,36 +24,36 @@ class BurgerBuilder extends Component {
         error: false
     }
 
-    componentDidMount () {
-        // console.log(this.props);
-        // axios.get( 'https://react-my-burger-5618c.firebaseio.com/ingredients.json' )
-        //     .then( response => {
-        //         this.setState( { ingredients: response.data } );
-        //     } )
-        //     .catch( error => {
-        //         this.setState( { error: true } );
-        //     } );
+    componentDidMount() {
+
+        axios.get( 'https://react-my-burger-5618c.firebaseio.com/ingredients.json' )
+            .then( response => {
+                this.setState( { ingredients: response.data } );
+            } )
+            .catch( error => {
+                this.setState( { error: true } );
+            } );
     }
 
-    updatePurchaseState ( ingredients ) {
-        const sum = Object.keys( ingredients )
-            .map( igKey => {
+    updatePurchaseState(ingredients) {
+        const sum = Object.keys(ingredients)
+            .map(igKey => {
                 return ingredients[igKey];
-            } )
-            .reduce( ( sum, el ) => {
+            })
+            .reduce((sum, el) => {
                 return sum + el;
-            }, 0 );
+            }, 0);
         return sum > 0;
     }
 
 
 
     purchaseHandler = () => {
-        this.setState( { purchasing: true } );
+        this.setState({ purchasing: true });
     }
 
     purchaseCancelHandler = () => {
-        this.setState( { purchasing: false } );
+        this.setState({ purchasing: false });
     }
 
     purchaseContinueHandler = () => {
@@ -61,17 +62,17 @@ class BurgerBuilder extends Component {
         });
     }
 
-    render () {
+    render() {
         const disabledInfo = {
             ...this.props.ings
         };
-        for ( let key in disabledInfo ) {
+        for (let key in disabledInfo) {
             disabledInfo[key] = disabledInfo[key] <= 0
         }
         let orderSummary = null;
         let burger = this.state.error ? <p>Ingredients can't be loaded!</p> : <Spinner />;
 
-        if ( this.props.ings ) {
+        if (this.props.ings) {
             burger = (
                 <Aux>
                     <Burger ingredients={this.props.ings} />
@@ -90,7 +91,7 @@ class BurgerBuilder extends Component {
                 purchaseCancelled={this.purchaseCancelHandler}
                 purchaseContinued={this.purchaseContinueHandler} />;
         }
-        if ( this.state.loading ) {
+        if (this.state.loading) {
             orderSummary = <Spinner />;
         }
         // {salad: true, meat: false, ...}
@@ -115,12 +116,12 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
     return {
         onIngredientAdded: (ingName) => {
-            dispatch({type: actionTypes.ADD_INGREDIENT, ingredientName: ingName})
+            dispatch(addIngredient(ingName))
         },
         onIngredientRemoved: (ingName) => {
-            dispatch({type: actionTypes.REMOVE_INGREDIENT, ingredientName: ingName})
+            dispatch(removeIngredient(ingName))
         }
     }
 }
 
-export default connect(mapStateToProps,mapDispatchToProps)(withErrorHandler( BurgerBuilder, axios ));
+export default connect(mapStateToProps, mapDispatchToProps)(withErrorHandler(BurgerBuilder, axios));

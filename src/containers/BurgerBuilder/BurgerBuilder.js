@@ -8,7 +8,6 @@ import OrderSummary from '../../components/Burger/OrderSummary/OrderSummary';
 import Spinner from '../../components/UI/Spinner/Spinner';
 import withErrorHandler from '../../hoc/withErrorHandler/withErrorHandler';
 import axios from '../../axios-orders';
-import * as actionTypes from '../../store/actions/actionTypes';
 import { connect } from 'react-redux';
 import { addIngredient, removeIngredient, initIngredients } from '../../store/actions/burgerBuilder';
 import * as actions from '../../store/actions/index';
@@ -43,7 +42,14 @@ class BurgerBuilder extends Component {
 
 
     purchaseHandler = () => {
-        this.setState({ purchasing: true });
+        if (this.props.isAuthenticated)
+        {
+            this.setState({ purchasing: true });
+        } else {
+            this.props.onSetRedirectPath('/checkout');
+            this.props.history.push('/auth');
+         }
+
     }
 
     purchaseCancelHandler = () => {
@@ -79,7 +85,8 @@ class BurgerBuilder extends Component {
                         disabled={disabledInfo}
                         purchasable={this.updatePurchaseState(this.props.ings)}
                         ordered={this.purchaseHandler}
-                        price={this.props.ttlPrice} />
+                        price={this.props.ttlPrice}
+                        isAuth={this.props.isAuthenticated}/>
                 </Aux>
             );
             orderSummary = <OrderSummary
@@ -107,7 +114,8 @@ const mapStateToProps = state => {
     return {
         ings: state.burgerBuilder.ingredients,
         ttlPrice: state.burgerBuilder.totalPrice,
-        err: state.burgerBuilder.error
+        err: state.burgerBuilder.error,
+        isAuthenticated: state.auth.token !== null
     }
 }
 
@@ -124,6 +132,9 @@ const mapDispatchToProps = dispatch => {
         },
         onInitPurchase: () => {
             dispatch(actions.purchaseInit())
+        },
+        onSetRedirectPath: (path) => {
+            dispatch(actions.setAuthRedirectPath(path));
         }
     }
 }

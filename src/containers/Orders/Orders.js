@@ -4,22 +4,22 @@ import axios from '../../axios-orders';
 import withErrorHandler from '../../hoc/withErrorHandler/withErrorHandler';
 import * as actions from '../../store/actions/index';
 import { connect } from 'react-redux';
-import spinner from '../../components/UI/Spinner/Spinner';
+import Spinner from '../../components/UI/Spinner/Spinner';
 
 class Orders extends Component {
 
 
     componentDidMount() {
 
-        this.props.onFetchOrders();
+        this.props.onFetchOrders(this.props.token,this.props.userId);
 
     }
 
     render() {
 
-        console.log(this.props.orders);
 
-        let orders = <spinner></spinner>
+
+        let orders = <Spinner></Spinner>
 
         if (!this.props.loading)
             orders = this.props.orders.map(order => {
@@ -37,17 +37,18 @@ class Orders extends Component {
 }
 
 export const mapStateToProps = state => {
+
     return {
-
-        'orders': state.order.orders,
-        'loading': state.order.loading
-
+        orders: state.order.orders,
+        loading: state.order.loading,
+        token: state.auth.token,
+        userId: state.auth.userId
     }
 }
 
 export const mapDispatchToProps = dispatch => {
     return {
-        onFetchOrders: () => dispatch(actions.fetchOrders())
+        onFetchOrders: (token,userId) => dispatch(actions.fetchOrders(token,userId))
     }
 }
 
